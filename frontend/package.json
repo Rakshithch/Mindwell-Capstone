@@ -30,10 +30,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "prestart": "export $(grep -v '^#' .env | xargs)"
+    "build": "react-scripts build"
   },
   "eslintConfig": {
     "extends": [

@@ -1,5 +1,5 @@
 // backend/server.js
-// Final Corrected Version: Includes storageBucket init, userRoutes mounting, and correct rate limiter placement.
+// Final Corrected Version: Includes storageBucket init, userRoutes mounting, correct rate limiter placement, and CORS trailing slash fix.
 
 const express = require("express");
 const cors = require("cors");
@@ -37,13 +37,17 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
 
 const corsOptions = {
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests) or from allowed origins
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
+        // --- MODIFIED: Handle potential trailing slash ---
+        const originWithoutSlash = origin ? origin.replace(/\/$/, '') : origin; // Remove trailing slash if present
+
+        // Allow requests with no origin OR from allowed origins (check both forms just in case)
+        if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes(originWithoutSlash)) {
+            callback(null, true); // Allow
         } else {
             console.warn(`CORS blocked request from origin: ${origin}`);
-            callback(new Error('This origin is not allowed by CORS policy.'));
+            callback(new Error('This origin is not allowed by CORS policy.')); // Block
         }
+        // --- END MODIFICATION ---
     },
     methods: "GET, POST, DELETE, PUT, OPTIONS", // Allowed HTTP methods
     allowedHeaders: "Content-Type, Authorization", // Allowed headers in requests
@@ -109,17 +113,14 @@ try {
         throw new Error("Firebase Admin SDK credentials not found. Set FIREBASE_SERVICE_ACCOUNT_JSON env var or place firebaseServiceAccount.json in backend root.");
     }
 
-    // --- >>> CORRECTED INITIALIZATION <<< ---
-    // Initialize Firebase Admin App with credentials AND storage bucket
+    // Initialize Firebase Admin App with credentials AND storage bucket name
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        // !!! IMPORTANT: REPLACE with your actual Firebase Storage bucket name !!!
-        // Find it in Firebase Console -> Storage -> Files tab (it looks like your-project-id.appspot.com)
-        storageBucket: "gs://mindwell-305ae.firebasestorage.app" // <<< ADD THIS LINE AND REPLACE VALUE
+        // Replace with your actual bucket name (without gs://)
+        storageBucket: "mindwell-305ae.appspot.com"
     });
-    // --- >>> END CORRECTION <<< ---
 
-    console.log("✅ Firebase Admin SDK Initialized Successfully (including Storage Bucket config)."); // Updated log
+    console.log("✅ Firebase Admin SDK Initialized Successfully (including Storage Bucket config).");
 
 } catch (error) {
     // Log critical initialization error and exit the process
@@ -131,7 +132,7 @@ try {
 // --- Step 2: Mount ALL API Routes ---
 console.log("--- DEBUG: Mounting API Routes ---");
 
-// Public routes (do NOT apply authMiddleware here globally)
+// Public routes
 console.log("--- DEBUG: Mounting /api/facilities ---");
 app.use("/api/facilities", facilityRoutes);
 console.log("--- DEBUG: Mounting /api/wellness-feed ---");
@@ -139,13 +140,13 @@ app.use("/api/wellness-feed", wellnessFeedRoutes);
 console.log("--- DEBUG: Mounting /api/anonymous-letters ---");
 app.use("/api/anonymous-letters", letterRoutes);
 
-// Protected routes (Apply authMiddleware before the route handler)
+// Protected routes
 console.log("--- DEBUG: Mounting /api/ai-chat ---");
 app.use("/api/ai-chat", authMiddleware, aiChatRoutes);
 
 // USER ROUTES MOUNTING
 console.log("--- DEBUG: Attempting to mount /api/user ---");
-app.use('/api/user', authMiddleware, userRoutes); // Apply auth middleware here
+app.use('/api/user', authMiddleware, userRoutes);
 console.log("--- DEBUG: Successfully mounted /api/user ---");
 
 // --- End API Routes ---
@@ -158,14 +159,14 @@ app.get("/healthz", (req, res) => { res.status(200).send("OK"); });
 console.log("--- DEBUG: Root and Health routes mounted ---");
 
 // --- Step 3: Centralized Error Handling ---
-// 404 Handler (Catch-all for routes not matched above)
+// 404 Handler
 console.log("--- DEBUG: Mounting 404 handler ---");
 app.use((req, res, next) => {
-    console.log(`--- DEBUG: 404 triggered for ${req.method} ${req.originalUrl} ---`); // Log which request hit 404
+    console.log(`--- DEBUG: 404 triggered for ${req.method} ${req.originalUrl} ---`);
     res.status(404).json({ error: `Resource Not Found: ${req.method} ${req.originalUrl}` });
 });
 
-// Global Error Handler (Catches errors passed via next(err))
+// Global Error Handler
 console.log("--- DEBUG: Mounting global error handler ---");
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
@@ -185,7 +186,7 @@ app.use((err, req, res, next) => {
 // --- End Error Handling ---
 
 // --- Start the Server ---
-const PORT = process.env.PORT || 8081; // Ensure this is the port your frontend targets (8081)
+const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
     console.log(`\n🚀 MindWell Server listening on port ${PORT}`);
     console.log(`      Mode: ${process.env.NODE_ENV || 'development'}`);
