@@ -3,15 +3,7 @@
 
 const admin = require("firebase-admin"); // Ensure Firebase Admin SDK is initialized in server.js
 
-/**
- * Express Middleware to verify Firebase ID token from the Authorization header.
- *
- * - Expects 'Authorization: Bearer <ID_TOKEN>'.
- * - Verifies the ID token using Firebase Admin SDK.
- * - If valid, attaches decoded user info (uid, email, etc.) to `req.user`.
- * - Calls `next()` to proceed to the next handler.
- * - If invalid/missing token or verification fails, sends an appropriate HTTP error response (401, 403, 500).
- */
+
 const authMiddleware = async (req, res, next) => {
     // 1. Get the Authorization header. Use optional chaining for safety.
     const authHeader = req.headers?.authorization;
