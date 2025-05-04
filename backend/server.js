@@ -33,7 +33,7 @@ console.log("--- DEBUG: Helmet applied ---");
 // --- CORS Configuration ---
 const allowedOrigins = process.env.NODE_ENV === 'production'
     ? (process.env.FRONTEND_URL_PROD ? [process.env.FRONTEND_URL_PROD] : []) // Use configured prod URL
-    : ["http://localhost:3000", "http://localhost:8082", "http://localhost:8003", "http://localhost:8081"]; // Dev origins
+    : ["http://localhost:3000", "http://localhost:8082", "http://localhost:8003", "http://localhost:8081", "https://mindwell-capstone-f.onrender.com"]; // Dev origins
 
 const corsOptions = {
     origin: function (origin, callback) {
