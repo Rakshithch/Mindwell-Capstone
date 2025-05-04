@@ -117,7 +117,7 @@ try {
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         // Replace with your actual bucket name (without gs://)
-        storageBucket: "mindwell-305ae.appspot.com"
+        storageBucket: "mindwell-1f2fe.firebasestorage.app"
     });
 
     console.log("✅ Firebase Admin SDK Initialized Successfully (including Storage Bucket config).");
