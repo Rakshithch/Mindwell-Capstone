@@ -112,7 +112,7 @@ MENTALHEALTHAPPLICATION_BACKUP/
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/gpradeep7898/Mindwell.git
+    git clone https://github.com/Rakshithch/Mindwell-Capstone.git
     cd Mindwell
     ```
 
@@ -201,12 +201,3 @@ Commit your changes (git commit -m 'Add some feature').
 Push to the branch (git push origin feature/YourFeature).
 Open a Pull Request.
 Please ensure your code follows the existing style and includes tests where appropriate.
-
-📄 License
-(Optional) Specify your license here, e.g.:
-This project is licensed under the MIT License - see the LICENSE.md file for details.
-Or state if it's proprietary.
-
-📫 Contact
-Pradeep Gatti - 
-Project Link: https://github.com/gpradeep7898/Mindwell
