@@ -113,7 +113,7 @@ MENTALHEALTHAPPLICATION_BACKUP/
 1.  **Clone the Repository:**
     ```bash
     git clone https://github.com/Rakshithch/Mindwell-Capstone.git
-    cd Mindwell
+    cd Mindwell-Capstone
     ```
 
 2.  **Backend Setup:**
